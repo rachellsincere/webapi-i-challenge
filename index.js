@@ -44,11 +44,70 @@ server.get('/api/users', (req, res) => {
 });
 //GET request to /api/users/:id
 server.get('api/users/:id', (req, res) => {
+    const { id } = req.params;
 
+    db.findById(id)
+    .then(user => {
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({
+                errMessage: "The user with the specified ID does not exist."
+            })
+        }
+    })
+    .catch(err => {
+        res.status(500).json({
+            err: err,
+            errMessage: "The user information could not be retrieved." 
+        })
+    })
 })
-//DELETE request to /api/users/:id
-//PUT request to /api/users/:id
 
+//DELETE request to /api/users/:id
+server.delete('/api/users/:id', (req, res) => {
+    const { id } = req.params; //always defined. no need for middleware
+
+    db.remove(id)
+        .then(deletedUser => {
+            if (deletedUser) {
+                res.json(deletedUser);
+            } else {
+                res.status(404).json({
+                    errMessage: "The user with the specified ID does not exist." 
+                })
+            }   
+        })
+        .catch(err => {
+            res.status(500).json({
+                err: err,
+                errMessage: "The user could not be removed"
+            })
+        })
+})
+
+//PUT request to /api/users/:id
+server.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const changes = req.body;
+
+    db.update(id, changes)
+        .then(updated => {
+            if (updated) {
+                res.json(updated);
+            } else {
+                res.status(404).json({
+                    errMessage: "The user with the specified ID does not exist." 
+                })
+            }
+        })
+        .catch(err => {
+            res.status().json({
+                err: err,
+                errMessage: "The user information could not be modified." 
+            })
+        })
+})
 
 
 //should be the last step 
