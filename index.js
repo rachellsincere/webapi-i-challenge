@@ -1,13 +1,30 @@
 // implement your API here
+
+//libraries
 const express = require('express');
 
+//other files
 const db = require('./data/db.js');
 
+//global objects
 const server = express();
+
+//middleware that allows to define newUser by parsing body
+server.use(express.json());
 
 // what happens on a POST request to /api/users
 server.post('/api/users', (req/*incoming*/, res/*outgoing*/) => {
-
+    const newUser = req.body;
+    db.insert(newUser)
+        .then(user => {
+          res.status(201).json(user);  
+        })
+        .catch(err => {
+            res.status(500).json({
+                err: err,
+                errMessage: "There was an error while saving the user to the database"
+            })
+        })
 });
 
 //GET request to /api/users
@@ -18,13 +35,17 @@ server.get('/api/users', (req, res) => {
     })
     .catch(err => {
         res.status(500).json({
-            error: "The users information could not be retrieved."
+            err: err,
+            errMessage: "The users information could not be retrieved."
         })
     })
     
 
 });
 //GET request to /api/users/:id
+server.get('api/users/:id', (req, res) => {
+
+})
 //DELETE request to /api/users/:id
 //PUT request to /api/users/:id
 
