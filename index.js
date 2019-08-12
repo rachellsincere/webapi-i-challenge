@@ -15,9 +15,22 @@ server.use(express.json());
 // what happens on a POST request to /api/users
 server.post('/api/users', (req/*incoming*/, res/*outgoing*/) => {
     const newUser = req.body;
+    const name  = req.params.name;
+    const bio  = req.params.bio;
+    console.log(req.params);
+    
+    
+
     db.insert(newUser)
-        .then(user => {
-          res.status(201).json(user);  
+        .then(newUser => {
+            if (name && bio) {
+                res.status(201).json(newUser); 
+                
+            } else {
+                res.status(400).json({
+                    errMessage: "Please provide name and bio for the user." 
+                })
+            }
         })
         .catch(err => {
             res.status(500).json({
